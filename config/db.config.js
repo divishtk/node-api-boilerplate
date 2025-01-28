@@ -11,7 +11,6 @@ const mongoConnect = async () => {
     } catch (err) {
       console.log("Connection issue", err);
       process.exit(1);
-      throw err;
     }
   };
   

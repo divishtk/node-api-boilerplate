@@ -27,7 +27,6 @@ const userAuthMiddleware = (req, res, next) => {
   const missingFields = Object.keys(requiredFields).filter(
     (key) => !req.body[key]
   );
-  console.log(missingFields);
   if (missingFields.length > 0) {
     const errorMessage = missingFields
       .map((key) => requiredFields[key])
@@ -38,7 +37,6 @@ const userAuthMiddleware = (req, res, next) => {
   if (password.length < 8) {
     return next("Password must be at least 8 characters long");
   }
-  d;
 
   next(); // To call controller
 };
