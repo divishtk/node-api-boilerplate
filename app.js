@@ -2,9 +2,11 @@ import express from "express";
 import "express-async-errors"
 import  testRouter  from "./routes/tests.routes.js";
 import authRouter  from "./routes/userAuth.routes.js";
+import userRouter from "./routes/updateUser.routes.js";
 import cors from "cors";
 import morgan from "morgan";
 import bodyParser from "body-parser"; // For parsing JSON bodies
+import errorHandlerMiddlware from "./middlewares/errorhandler.middlware.js";
 
 
 const app = express();
@@ -17,13 +19,11 @@ app.use(
   );
   app.use(bodyParser.json());
 
-
-  //app.use(userAuthMiddleware)
-  
-
 app.use('/api/v1/tests',testRouter)
 app.use('/api/v1/auth',authRouter)
+app.use('/api/v1/update',userRouter)
 
+app.use(errorHandlerMiddlware);
 
 
 export {app}
