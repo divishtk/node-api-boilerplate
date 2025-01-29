@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       //validate: validator.isStrongPassword
       minLength: [8, "Password must be atleast of 8 chars"],
+      //select: true
     },
     location: {
       type: String,
@@ -40,6 +41,7 @@ userSchema.pre("save", async function (next) {
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  console.log('this.password', this.password);
 });
 
 userSchema.methods.createJWT = async function () {
@@ -51,6 +53,11 @@ userSchema.methods.createJWT = async function () {
       expiresIn: process.env.JWT_TOKEN_EXPIRY,
     }
   );
+};
+
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  console.log('enteredPassword', enteredPassword);
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 export const User = mongoose.model("User", userSchema);
