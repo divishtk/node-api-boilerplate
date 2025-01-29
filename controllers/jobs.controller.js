@@ -16,4 +16,33 @@ const getAllJobsController = async (req, res) => {
      getAllJobs });
 };
 
-export { createJobsController, getAllJobsController };
+const updateJobController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { company, position } = req.body;
+    if (!company || !position) {
+      return next("Company name and position is required");
+    }
+    const findJob = await Jobs.findOne({_id:id});
+    if (!findJob) {
+      return next(`Job with id ${id} not found`);
+    }
+    if (!req.user.userid === findJob.createdBy.toString()) {
+      return next(`You are not authorized to update this job`);
+    }
+    const updateJob = await Jobs.findByIdAndUpdate(id,
+      req.body,
+      {
+          new: true,
+          runValidators: true,
+      }
+    )
+  
+    res.status(200).json({ updateJob });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export { createJobsController, getAllJobsController, updateJobController };
