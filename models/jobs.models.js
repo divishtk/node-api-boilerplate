@@ -12,8 +12,7 @@ const jobsSchema = new mongoose.Schema(
     position: {
       type: String,
       required: [true, "Job position is required"],
-      max:100,
-      unique: true,
+      max:100
     },
     workLocation: {
         type: String,
