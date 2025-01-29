@@ -1,6 +1,6 @@
 import e from "express";
 import jwtMiddleware from "../middlewares/jwtauth.middleware.js";
-import updateUserController from "../controllers/updateUser.controller.js";
+import {updateUserController ,updatePasswordController} from "../controllers/updateUser.controller.js";
 
 
 const routes = e.Router();

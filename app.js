@@ -3,6 +3,7 @@ import "express-async-errors"
 import  testRouter  from "./routes/tests.routes.js";
 import authRouter  from "./routes/userAuth.routes.js";
 import userRouter from "./routes/updateUser.routes.js";
+import updayePasswordRouter from "./routes/updatePassword.route.js";
 import cors from "cors";
 import morgan from "morgan";
 import bodyParser from "body-parser"; // For parsing JSON bodies
@@ -21,7 +22,7 @@ app.use(
 
 app.use('/api/v1/tests',testRouter)
 app.use('/api/v1/auth',authRouter)
-app.use('/api/v1/update',userRouter)
+app.use('/api/v1/update',updayePasswordRouter)
 
 app.use(errorHandlerMiddlware);
 

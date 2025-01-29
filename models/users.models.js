@@ -55,7 +55,6 @@ userSchema.methods.createJWT = async function () {
 };
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  console.log('enteredPassword', enteredPassword);
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
