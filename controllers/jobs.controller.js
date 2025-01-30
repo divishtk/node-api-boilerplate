@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Jobs } from "../models/jobs.models.js";
+import moment from "moment";
 
 const createJobsController = async (req, res) => {
   const { company, position } = req.body;
@@ -87,7 +88,32 @@ const jobstatsController = async (req, res) => {
   jobStats.forEach((stat) => {
     defaultStats[stat._id] = stat.count || 0;
   });
-  res.status(200).json({ totalJobs: defaultStats.length, defaultStats });
+
+  let monthlyApplications = await Jobs.aggregate([
+    {
+      $match: {
+        createdBy: new mongoose.Types.ObjectId(req.user.userId),
+      }
+    },
+    {
+        $group:{
+            _id:{
+                year :{$year: "$createdAt"},
+                month:{ $month: "$createdAt"}
+            },
+            count:{
+                $sum: 1
+            }
+        }
+    }
+  ]);
+
+  monthlyApplications = monthlyApplications.map((item) =>{
+    const {_id:{year,month},count} = item;
+    const date = moment().month(month - 1).year(year).format("MMMM Y");
+    return {date,count};
+  }).reverse();
+  res.status(200).json({ totalJobs: defaultStats.length, defaultStats,monthlyApplications });
 };
 
 export {
