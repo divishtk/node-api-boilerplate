@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import validator from "validator";
+import { User } from "./users.models.js";
 
 
 const jobsSchema = new mongoose.Schema(
@@ -32,7 +32,7 @@ const jobsSchema = new mongoose.Schema(
     },
     createdBy:{
         type:mongoose.Types.ObjectId,
-        ref:'User',
+        ref:User,
     }
   },
   {
