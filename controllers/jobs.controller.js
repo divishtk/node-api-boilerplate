@@ -50,13 +50,25 @@ const getAllJobsController = async (req, res) => {
   };
 
   if (sort) {
-    console.log(sort);
     queryResults = queryResults.sort(sortOptions[sort] || "-createdAt"); //default by latest.
   }
 
+  //pagination
+
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  queryResults = queryResults.skip(skip).limit(limit);
+
+  //count jobs
+  const totalJobs = await Jobs.countDocuments(queryResults);
+  let numOfPage = Math.ceil(totalJobs / limit);
+
   const getAllJobs = await queryResults;
 
-  res.status(200).json({ totalJobs: getAllJobs.length, getAllJobs });
+  // res.status(200).json({ totalJobs: getAllJobs.length, getAllJobs ,numOfPage});
+  res.status(200).json({ totalJobs, getAllJobs, numOfPage });
 };
 
 const updateJobController = async (req, res, next) => {
