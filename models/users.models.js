@@ -29,6 +29,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "India",
     },
+    refreshToken:{
+      type:String,
+    }
   },
   {
     timestamps: true,
@@ -53,6 +56,18 @@ userSchema.methods.createJWT = async function () {
     }
   );
 };
+
+
+userSchema.methods.generateRefreshToken = async function(){
+  return JWT.sign({
+    userId: this._id
+  },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
+}
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
