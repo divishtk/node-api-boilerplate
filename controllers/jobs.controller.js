@@ -15,7 +15,20 @@ const createJobsController = async (req, res) => {
 };
 
 const getAllJobsController = async (req, res) => {
-  const getAllJobs = await Jobs.find({ createdBy: req.user.userId });
+  const { status } = req.query;
+
+  //condtion for searcing by status & filtering
+  const queryObject = {
+    createdBy: req.user.userId,
+  };
+  if (status && status !== "all") {
+    queryObject.status = status;
+  }
+
+  const queryResults = Jobs.find(queryObject);
+  const getAllJobs = await queryResults;
+
+  // const getAllJobs = await Jobs.find({ createdBy: req.user.userId });
   res.status(200).json({ totalJobs: getAllJobs.length, getAllJobs });
 };
 
@@ -93,27 +106,41 @@ const jobstatsController = async (req, res) => {
     {
       $match: {
         createdBy: new mongoose.Types.ObjectId(req.user.userId),
-      }
+      },
     },
     {
-        $group:{
-            _id:{
-                year :{$year: "$createdAt"},
-                month:{ $month: "$createdAt"}
-            },
-            count:{
-                $sum: 1
-            }
-        }
-    }
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+        },
+        count: {
+          $sum: 1,
+        },
+      },
+    },
   ]);
 
-  monthlyApplications = monthlyApplications.map((item) =>{
-    const {_id:{year,month},count} = item;
-    const date = moment().month(month - 1).year(year).format("MMMM Y");
-    return {date,count};
-  }).reverse();
-  res.status(200).json({ totalJobs: defaultStats.length, defaultStats,monthlyApplications });
+  monthlyApplications = monthlyApplications
+    .map((item) => {
+      const {
+        _id: { year, month },
+        count,
+      } = item;
+      const date = moment()
+        .month(month - 1)
+        .year(year)
+        .format("MMMM Y");
+      return { date, count };
+    })
+    .reverse();
+  res
+    .status(200)
+    .json({
+      totalJobs: defaultStats.length,
+      defaultStats,
+      monthlyApplications,
+    });
 };
 
 export {
