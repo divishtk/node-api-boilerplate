@@ -11,8 +11,14 @@ import bodyParser from "body-parser"; // For parsing JSON bodies
 import errorHandlerMiddlware from "./middlewares/errorhandler.middlware.js";
 import { createJobsController } from "./controllers/jobs.controller.js";
 
+//security packages
+import helmet from "helmet";
+import xss from "xss-clean"
+
 
 const app = express();
+app.use(helmet());
+app.use(xss())
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.static("./assets"));
