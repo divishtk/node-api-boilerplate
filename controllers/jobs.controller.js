@@ -15,20 +15,47 @@ const createJobsController = async (req, res) => {
 };
 
 const getAllJobsController = async (req, res) => {
-  const { status } = req.query;
+  const { status, workType, sort, search } = req.query;
+
+  // const getAllJobs = await Jobs.find({ createdBy: req.user.userId });
 
   //condtion for searcing by status & filtering
   const queryObject = {
     createdBy: req.user.userId,
   };
+
+  //filter by status
   if (status && status !== "all") {
     queryObject.status = status;
   }
 
-  const queryResults = Jobs.find(queryObject);
+  //filter by workType
+  if (workType && workType !== "all") {
+    queryObject.workType = workType;
+  }
+  // Case-insensitive search by job position
+  if (search) {
+    queryObject.position = {
+      $regex: search,
+      $options: "i",
+    };
+  }
+  let queryResults = Jobs.find(queryObject);
+
+  const sortOptions = {
+    latest: "-createdAt",
+    oldest: "creadtedAt",
+    "a-z": "position",
+    "z-a": "-position",
+  };
+
+  if (sort) {
+    console.log(sort);
+    queryResults = queryResults.sort(sortOptions[sort] || "-createdAt"); //default by latest.
+  }
+
   const getAllJobs = await queryResults;
 
-  // const getAllJobs = await Jobs.find({ createdBy: req.user.userId });
   res.status(200).json({ totalJobs: getAllJobs.length, getAllJobs });
 };
 
@@ -134,13 +161,11 @@ const jobstatsController = async (req, res) => {
       return { date, count };
     })
     .reverse();
-  res
-    .status(200)
-    .json({
-      totalJobs: defaultStats.length,
-      defaultStats,
-      monthlyApplications,
-    });
+  res.status(200).json({
+    totalJobs: defaultStats.length,
+    defaultStats,
+    monthlyApplications,
+  });
 };
 
 export {
